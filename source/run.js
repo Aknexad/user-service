@@ -4,6 +4,9 @@ const { SERVICE_NAME, PORT } = require('./configs');
 const routes = require('./routes');
 const { connection: dbConnection } = require('./database');
 const { hikaError } = require('./middlewares');
+const passport = require('passport');
+
+const initializePassport = require('./utils/passport/passport-initialize');
 
 const runService = async () => {
   const express = expressjs();
@@ -13,8 +16,12 @@ const runService = async () => {
   express.use(cors());
   express.use('/statics', expressjs.static(__dirname + '/statics'));
 
+  // initialize Passport
+  initializePassport(passport);
+  express.use(passport.initialize());
+
   // await dbConnection();
-  express.use(routes());
+  express.use(routes({ passport }));
   express.use(hikaError);
 
   express.listen(PORT, () => {

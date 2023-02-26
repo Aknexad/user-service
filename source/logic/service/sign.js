@@ -16,7 +16,6 @@ const sing = {
 
   singInUser: async userInfo => {
     // findUser
-
     const user = await singRepo.findByCustomFiled(userInfo.userInput);
 
     if (!user) throw new NotFound('user dosent exist');
