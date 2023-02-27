@@ -1,8 +1,6 @@
 const bcrypt = require('bcrypt');
 const speakeasy = require('speakeasy');
 
-const {} = require('../../configs');
-
 // inport user repository
 const { sing } = require('../../database/repository/');
 
@@ -33,18 +31,19 @@ class StrategyLogic {
     try {
       const { token, code } = req.body;
 
-      const user = await userRepo.CheackTempToken(token);
+      const user = await sing.cheackTempToken(token);
       if (user === null) return done(null, false);
 
       if (user.otp !== null) {
         if (user.otp !== parseInt(code)) return done(null, false);
 
-        await userRepo.UpdateOtp(user.id, null);
-        await userRepo.UpdateTempToken(user.id, '');
+        await sing.updateOtp(user.id, null);
+        await sing.updateTempToken(user.id, '');
 
         return done(null, user);
       }
 
+      // verfying 2fa code
       const Verifying = speakeasy.totp.verify({
         secret: user.secret.key,
         encoding: 'base32',
@@ -53,7 +52,7 @@ class StrategyLogic {
 
       if (Verifying === false) return done(null, false);
 
-      await userRepo.UpdateTempToken(user.id, '');
+      await sing.updateTempToken(user.id, '');
 
       return done(null, user);
     } catch (error) {
@@ -66,14 +65,14 @@ class StrategyLogic {
     try {
       const { userId, code } = req.body;
 
-      const user = await userRepo.FindUserById(userId);
+      const user = await sing.findUserById(userId);
 
       if (user === null) return done(null, false);
 
       if (user.otp !== null) {
         if (user.otp !== parseInt(code)) return done(null, false);
 
-        await userRepo.UpdateOtp(user.id, null);
+        await sing.updateOtp(user.id, null);
 
         return done(null, user);
       }
@@ -98,8 +97,7 @@ class StrategyLogic {
     try {
       const { userInput, password } = req.body;
 
-      console.log(userInput, password);
-      const user = await userRepo.FindByCustomFiled(userInput);
+      const user = await sing.findByCustomFiled(userInput);
 
       if (!user) return done(null, false);
 
@@ -107,7 +105,7 @@ class StrategyLogic {
       if (user.otp === null) throw new Error('you dont have otp try agen');
 
       if (user.otp !== parseInt(password)) return done(null, false);
-      await userRepo.UpdateOtp(user.id, null);
+      await sing.updateOtp(user.id, null);
 
       return done(null, user);
     } catch (error) {
