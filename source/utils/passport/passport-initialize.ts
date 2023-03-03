@@ -1,11 +1,13 @@
-const LocalStrategy = require('passport-local').Strategy;
-const CustomStrategy = require('passport-custom').Strategy;
+// const CustomStrategy = require('passport-custom').Strategy;
 
-const StrategyLogic = require('./passport-strategy-logic');
+import { Strategy as LocalStrategy } from 'passport-local';
+import { Strategy as CustomStrategy } from 'passport-custom';
+
+import StrategyLogic from './passport-strategy-logic';
 
 const stratgyLogic = new StrategyLogic();
 
-function initialize(passport) {
+export function initialize(passport: any) {
   // local
   passport.use(
     new LocalStrategy(
@@ -27,5 +29,3 @@ function initialize(passport) {
   // otp auth
   passport.use('otpAuth', new CustomStrategy(stratgyLogic.VerifyingOtp));
 }
-
-module.exports = initialize;

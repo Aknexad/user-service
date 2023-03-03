@@ -1,20 +1,26 @@
-const { sing: singRepo } = require('../../database/repository/index');
+import bcrypt from 'bcrypt';
+
+import { singRepo } from '../../database/repository';
 
 //
-const { token } = require('../../utils/index');
-const { cryptoToken, genarateOtp } = require('../../utils/generator-function');
+import { token as tokenGenrator, generatorFunction } from '../../utils/index';
 
 // Error Handeler
-const {
-  BadRequest,
-  NotFound,
-  UnAuthorize,
-} = require('../../utils/hika-errors');
+import { BadRequest, NotFound, UnAuthorize } from '../../utils/hika-errors';
 
-const sing = {
-  createUser: async payload => {
+interface CratePaylaod {
+  phone: string;
+  password: string;
+}
+
+interface Test {
+  [key: string]: any;
+}
+
+export const sing = {
+  createUser: async (payload: CratePaylaod) => {
     // chack username exist
-    const user = await singRepo.findByCustomFiled(payload.userInput);
+    const user = await singRepo.findByCustomFiled(payload.phone);
 
     if (user) throw new BadRequest('user with this name exist');
 
@@ -23,7 +29,7 @@ const sing = {
     return createUser;
   },
 
-  singInUser: async userInfo => {
+  singInUser: async (userInfo: Test) => {
     // findUser
     const user = await singRepo.findByCustomFiled(userInfo.userInput);
 
@@ -34,8 +40,8 @@ const sing = {
     };
 
     // genarate token
-    const accessToken = token.generateJwtToken.generateAccsessToken(paylaod);
-    const refreshToken = token.generateJwtToken.genrateRefreshToken(paylaod);
+    const accessToken = tokenGenrator.generateAccsessToken(paylaod);
+    const refreshToken = tokenGenrator.genrateRefreshToken(paylaod);
 
     // save to DB
 
@@ -46,14 +52,14 @@ const sing = {
     };
   },
 
-  newAccessToken: async token => {
+  newAccessToken: async (token: string) => {
     const getUserRefrashToken = '';
 
     if (!getUserRefrashToken) throw new UnAuthorize('unauth token');
 
     const payload = {};
 
-    const newAccessToken = token.generateJwtToken.generateAccsessToken(payload);
+    const newAccessToken = tokenGenrator.generateAccsessToken(payload);
 
     // save new acess toekn to database
     const updateAccessToken = '';
@@ -61,8 +67,8 @@ const sing = {
     return updateAccessToken;
   },
 
-  verifyAccessToekn: async toekn => {
-    const chackTokeninDb = ' ';
+  verifyAccessToekn: async (toekn: string) => {
+    const chackTokeninDb: any = {};
 
     if (!chackTokeninDb) throw new NotFound('token not found');
 
@@ -73,7 +79,7 @@ const sing = {
     return chackTokeninDb.id;
   },
 
-  setOtpStatus: async (userid, status, method) => {
+  setOtpStatus: async (userid: string, status: boolean, method: string) => {
     const getUser = await singRepo.findUserById(userid);
 
     if (!getUser) throw new NotFound('user dosent exist');
@@ -91,17 +97,17 @@ const sing = {
     return status;
   },
 
-  userLogout: async id => {
+  userLogout: async (id: string) => {
     const deleteDocument = '';
 
     return deleteDocument;
   },
 
-  requestResetPass: async (userInput, method) => {
+  requestResetPass: async (userInput: string, method: string) => {
     const user = await singRepo.findByCustomFiled(userInput);
 
     if (method === 'phone') {
-      const code = genarateOtp();
+      const code = generatorFunction.genarateOtp();
 
       // save otp to DB
       // await this.repository.UpdateOtp(user.id, code);
@@ -112,7 +118,7 @@ const sing = {
     }
 
     if (method === 'email') {
-      const { base32, base16 } = cryptoToken();
+      const { base32, base16 } = generatorFunction.cryptoGenareateToken();
 
       // const saveToekn = await this.repository.UpdateCrypteToken(
       //   user.id,
@@ -132,7 +138,7 @@ const sing = {
   },
 
   // optional
-  verfyResetPassForPhone: async payload => {
+  verfyResetPassForPhone: async (payload: Test) => {
     if (payload.method === 'phone') {
       const user = await singRepo.findByPhone(payload.userInput);
       if (!user) throw new NotFound('user dosent exsite');
@@ -150,7 +156,7 @@ const sing = {
     throw new BadRequest('bad request');
   },
   // optional
-  verfyResetPassForEmail: async payload => {
+  verfyResetPassForEmail: async (payload: Test) => {
     const user = await singRepo.findUserById(payload.id);
 
     if (!user) throw new UnAuthorize('UnAuthorize');
@@ -167,15 +173,15 @@ const sing = {
     return 'ok';
   },
 
-  verfyResetPass: async paylaod => {
-    if (payload.method === 'phone') {
-      const user = await singRepo.findByPhone(payload.userInput);
+  verfyResetPass: async (paylaod: Test) => {
+    if (paylaod.method === 'phone') {
+      const user = await singRepo.findByPhone(paylaod.userInput);
       if (!user) throw new NotFound('user dosent exsite');
 
-      if (user.otp !== parseInt(payload.code))
+      if (user.otp !== parseInt(paylaod.code))
         throw new UnAuthorize('UnAuthorize ');
 
-      const hashPass = await bcrypt.hash(payload.password, 7);
+      const hashPass = await bcrypt.hash(paylaod.password, 7);
 
       await singRepo.updateUserPassword(user.id, hashPass);
 
@@ -183,19 +189,19 @@ const sing = {
     }
 
     if (paylaod.method === 'email') {
-      const user = await singRepo.findUserById(payload.id);
+      const user = await singRepo.findUserById(paylaod.id);
 
       if (!user) throw new UnAuthorize('UnAuthorize');
 
       // chack token of user
       if (
-        user.token[0] !== payload.token &&
-        user.token[1] !== payload.subToken
+        user.token[0] !== paylaod.token &&
+        user.token[1] !== paylaod.subToken
       ) {
         throw new UnAuthorize('UnAuthorize');
       }
 
-      const hashPass = await bcrypt.hash(payload.password, 7);
+      const hashPass = await bcrypt.hash(paylaod.password, 7);
 
       await singRepo.updateUserPassword(user.id, hashPass);
 
@@ -205,7 +211,7 @@ const sing = {
     throw new BadRequest('bad request');
   },
 
-  enableTowFactAuth: async (id, status, method) => {
+  enableTowFactAuth: async (id: string, status: boolean, method: string) => {
     const user = await singRepo.findUserById(id);
 
     if (!user) throw new NotFound('user dosent exist');
@@ -237,7 +243,7 @@ const sing = {
     throw new BadRequest('bad request');
   },
 
-  disabelTowFactAuth: async (id, status, method) => {
+  disabelTowFactAuth: async (id: string, status: boolean, method: string) => {
     const user = await singRepo.findUserById(id);
 
     if (!user) throw new BadRequest('');
@@ -249,5 +255,3 @@ const sing = {
     // return updateStatus;
   },
 };
-
-module.exports = sing;

@@ -1,15 +1,16 @@
-const bcrypt = require('bcrypt');
-const speakeasy = require('speakeasy');
+import bcrypt from 'bcrypt';
+import speakeasy from 'speakeasy';
+import { Request } from 'express';
 
 // inport user repository
-const { sing } = require('../../database/repository/');
+import { singRepo } from '../../database/repository/';
 
 class StrategyLogic {
   //   local startgy logic for username
-  async LocalAuthByUsernaem(userInput, password, done) {
+  async LocalAuthByUsernaem(userInput: string, password: string, done: any) {
     // return done(null, userInput);
     try {
-      const user = await sing.findByCustomFiled(userInput);
+      const user = await singRepo.findByCustomFiled(userInput);
 
       if (!user) return done(null, false);
 
@@ -27,18 +28,18 @@ class StrategyLogic {
   // tow fact auth startaegy
 
   //
-  async VerifyingTotpFor2faRoute(req, done) {
+  async VerifyingTotpFor2faRoute(req: Request, done: any) {
     try {
-      const { token, code } = req.body;
+      const { token, code }: { token: string; code: string } = req.body;
 
-      const user = await sing.cheackTempToken(token);
+      const user = await singRepo.cheackTempToken(token);
       if (user === null) return done(null, false);
 
       if (user.otp !== null) {
         if (user.otp !== parseInt(code)) return done(null, false);
 
-        await sing.updateOtp(user.id, null);
-        await sing.updateTempToken(user.id, '');
+        await singRepo.updateOtp(user.id, null);
+        await singRepo.updateTempToken(user.id, '');
 
         return done(null, user);
       }
@@ -52,7 +53,7 @@ class StrategyLogic {
 
       if (Verifying === false) return done(null, false);
 
-      await sing.updateTempToken(user.id, '');
+      await singRepo.updateTempToken(user.id, '');
 
       return done(null, user);
     } catch (error) {
@@ -61,18 +62,18 @@ class StrategyLogic {
   }
 
   //
-  async VerifyingTotpForDisabelRoute(req, done) {
+  async VerifyingTotpForDisabelRoute(req: Request, done: any) {
     try {
       const { userId, code } = req.body;
 
-      const user = await sing.findUserById(userId);
+      const user = await singRepo.findUserById(userId);
 
       if (user === null) return done(null, false);
 
       if (user.otp !== null) {
         if (user.otp !== parseInt(code)) return done(null, false);
 
-        await sing.updateOtp(user.id, null);
+        await singRepo.updateOtp(user.id, null);
 
         return done(null, user);
       }
@@ -93,11 +94,11 @@ class StrategyLogic {
 
   // otp auth Strategy
 
-  async VerifyingOtp(req, done) {
+  async VerifyingOtp(req: Request, done: any) {
     try {
       const { userInput, password } = req.body;
 
-      const user = await sing.findByCustomFiled(userInput);
+      const user = await singRepo.findByCustomFiled(userInput);
 
       if (!user) return done(null, false);
 
@@ -105,7 +106,7 @@ class StrategyLogic {
       if (user.otp === null) throw new Error('you dont have otp try agen');
 
       if (user.otp !== parseInt(password)) return done(null, false);
-      await sing.updateOtp(user.id, null);
+      await singRepo.updateOtp(user.id, null);
 
       return done(null, user);
     } catch (error) {
@@ -114,4 +115,4 @@ class StrategyLogic {
   }
 }
 
-module.exports = StrategyLogic;
+export = StrategyLogic;
