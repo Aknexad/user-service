@@ -4,7 +4,7 @@ interface CrateUser {
 }
 
 interface FindeUserObjeact {
-  id: string;
+  id?: string;
   [key: string]: any;
   // phoneNumber?: string;
   // username?: string;
@@ -27,15 +27,14 @@ export const singRepo = {
 
   // find section
   //
-  findByCustomFiled: async (userInput: Str): Promise<FindeUserObjeact> => {
+  findByCustomFiled: async (
+    userInput: Str
+  ): Promise<FindeUserObjeact | null> => {
     // chack input for match username phone or email
 
     const findUser = userInput;
 
-    return {
-      id: '1',
-      phone: findUser,
-    };
+    return null;
   },
 
   findUserById: async (id: Str): Promise<Test> => {
