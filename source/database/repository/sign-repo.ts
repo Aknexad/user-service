@@ -34,7 +34,10 @@ export const singRepo = {
 
     const findUser = userInput;
 
-    return null;
+    return {
+      id: '1',
+      username: findUser,
+    };
   },
 
   findUserById: async (id: Str): Promise<Test> => {

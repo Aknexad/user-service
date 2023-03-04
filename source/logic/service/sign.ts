@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 import { singRepo } from '../../database/repository';
-// import { token as tokenGenrator, generatorFunction } from '../../utils/index';
+import { token as tokenGenrator, generatorFunction } from '../../utils/index';
 import { BadRequest, NotFound, UnAuthorize } from '../../utils/hika-errors';
 
 interface CratePaylaod {
@@ -31,13 +31,11 @@ export const sing = {
 
     if (!user) throw new NotFound('user dosent exist');
 
-    const paylaod = {
-      username: userInfo.userInput,
-    };
+    const paylaod = user;
 
     // genarate token
-    const accessToken = 'tokenGenrator.generateAccsessToken(paylaod)';
-    const refreshToken = 'tokenGenrator.genrateRefreshToken(paylaod)';
+    const accessToken = tokenGenrator.generateAccsessToken(paylaod);
+    const refreshToken = tokenGenrator.genrateRefreshToken(paylaod);
 
     // save to DB
 
@@ -55,7 +53,7 @@ export const sing = {
 
     const payload = {};
 
-    const newAccessToken = ' tokenGenrator.generateAccsessToken(payload)';
+    const newAccessToken = tokenGenrator.generateAccsessToken(payload);
 
     // save new acess toekn to database
     const updateAccessToken = '';
@@ -102,8 +100,10 @@ export const sing = {
   requestResetPass: async (userInput: string, method: string) => {
     const user = await singRepo.findByCustomFiled(userInput);
 
+    if (!user) throw new NotFound('user dosent exist');
+
     if (method === 'phone') {
-      const code = 'generatorFunction.genarateOtp();';
+      const code = generatorFunction.genarateOtp();
 
       // save otp to DB
       // await this.repository.UpdateOtp(user.id, code);
@@ -114,18 +114,18 @@ export const sing = {
     }
 
     if (method === 'email') {
-      // const { base32, base16 } = generatorFunction.cryptoGenareateToken();
+      const { base32, base16 } = generatorFunction.cryptoGenareateToken();
 
-      // const saveToekn = await this.repository.UpdateCrypteToken(
+      // const saveToekn = await singRepo.upda (
       //   user.id,
       //   base32,
       //   base16
       // );
 
-      // const link = `${process.env.REST_PASSWORD_BASE_URL}t1=${base32}/t2=${base16}/id=${user.id}`;
+      const link = `${process.env.REST_PASSWORD_BASE_URL}t1=${base32}/t2=${base16}/id=${user.id}`;
 
       // send to email
-      // console.log(link);
+      console.log(link);
 
       return 'chack your email';
     }

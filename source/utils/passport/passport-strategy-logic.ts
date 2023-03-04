@@ -106,7 +106,7 @@ class StrategyLogic {
       if (user.otp === null) throw new Error('you dont have otp try agen');
 
       if (user.otp !== parseInt(password)) return done(null, false);
-      await singRepo.updateOtp(user.id, null);
+      await singRepo.updateOtp(user.id!, null);
 
       return done(null, user);
     } catch (error) {
