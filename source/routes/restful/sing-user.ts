@@ -11,15 +11,6 @@ const router = Router();
 import { service } from '../../logic';
 
 export = (data?: any): Router => {
-  router.get('/', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      console.log('frist route');
-      return res.send('Sucsess');
-    } catch (error) {
-      next(error);
-    }
-  });
-
   router.post(
     '/singup',
     async (req: Request, res: Response, next: NextFunction) => {
@@ -56,10 +47,6 @@ export = (data?: any): Router => {
     passport.authenticate('verifyingTotp', { session: false }),
     async (req: AddUser, res: Response, next: NextFunction) => {
       try {
-        interface User {
-          username?: string | undefined;
-        }
-
         const { username } = req.user;
 
         const result = await service.sing.singInUser({ username });
@@ -76,9 +63,9 @@ export = (data?: any): Router => {
     passport.authenticate('otpAuth', { session: false }),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const { phone } = req.body;
+        const phone: string = req.body.phone;
 
-        const result = await service.sing.singInUser({ phone });
+        const result = await service.sing.singInUser({ phone, password: '' });
 
         return res.status(200).json({ result });
       } catch (error) {

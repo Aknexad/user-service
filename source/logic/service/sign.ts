@@ -4,17 +4,12 @@ import { singRepo } from '../../database/repository';
 import { token as tokenGenrator, generatorFunction } from '../../utils/index';
 import { BadRequest, NotFound, UnAuthorize } from '../../utils/hika-errors';
 
-interface CratePaylaod {
-  phone: string;
-  password: string;
-}
-
 interface Test {
   [key: string]: any;
 }
 
 export const sing = {
-  createUser: async (payload: CratePaylaod) => {
+  createUser: async (payload: UserInputPayload) => {
     // chack username exist
     const user = await singRepo.findByCustomFiled(payload.phone);
 
@@ -25,7 +20,7 @@ export const sing = {
     return createUser;
   },
 
-  singInUser: async (userInfo: Test) => {
+  singInUser: async (userInfo: UserInput) => {
     // findUser
     const user = await singRepo.findByCustomFiled(userInfo.userInput);
 
@@ -61,7 +56,7 @@ export const sing = {
     return updateAccessToken;
   },
 
-  verifyAccessToekn: async (toekn: string) => {
+  verifyAccessToekn: async (toekn: string): Promise<string> => {
     const chackTokeninDb: any = {};
 
     if (!chackTokeninDb) throw new NotFound('token not found');
@@ -97,12 +92,12 @@ export const sing = {
     return deleteDocument;
   },
 
-  requestResetPass: async (userInput: string, method: string) => {
+  requestResetPass: async (userInput: string, method: ResetPassMethod) => {
     const user = await singRepo.findByCustomFiled(userInput);
 
     if (!user) throw new NotFound('user dosent exist');
 
-    if (method === 'phone') {
+    if (method === ResetPassMethod.phone) {
       const code = generatorFunction.genarateOtp();
 
       // save otp to DB
@@ -113,7 +108,7 @@ export const sing = {
       return 'code send to yourr phone';
     }
 
-    if (method === 'email') {
+    if (method === ResetPassMethod.email) {
       const { base32, base16 } = generatorFunction.cryptoGenareateToken();
 
       // const saveToekn = await singRepo.upda (
@@ -169,12 +164,12 @@ export const sing = {
     return 'ok';
   },
 
-  verfyResetPass: async (paylaod: Test) => {
-    if (paylaod.method === 'phone') {
+  verfyResetPass: async (paylaod: VerfyResetPass<ResetPassMethod>) => {
+    if (paylaod.method === ResetPassMethod.phone) {
       const user = await singRepo.findByPhone(paylaod.userInput);
       if (!user) throw new NotFound('user dosent exsite');
 
-      if (user.otp !== parseInt(paylaod.code))
+      if (user.otp !== parseInt(paylaod.code!))
         throw new UnAuthorize('UnAuthorize ');
 
       const hashPass = await bcrypt.hash(paylaod.password, 7);
@@ -184,7 +179,7 @@ export const sing = {
       return 'ok';
     }
 
-    if (paylaod.method === 'email') {
+    if (paylaod.method === ResetPassMethod.email) {
       const user = await singRepo.findUserById(paylaod.id);
 
       if (!user) throw new UnAuthorize('UnAuthorize');
@@ -207,7 +202,11 @@ export const sing = {
     throw new BadRequest('bad request');
   },
 
-  enableTowFactAuth: async (id: string, status: boolean, method: string) => {
+  enableTowFactAuth: async (
+    id: string,
+    status: boolean,
+    method: Enable2faMothod
+  ) => {
     const user = await singRepo.findUserById(id);
 
     if (!user) throw new NotFound('user dosent exist');
@@ -216,21 +215,21 @@ export const sing = {
       // update user documet
     }
 
-    if (method === 'google') {
+    if (method === Enable2faMothod.googel) {
       // enabel googel 2fa in db
       // const secret = generateSecrat(id);
       // update secraet on Db
     }
 
     // phone
-    if (method === 'phone') {
+    if (method === Enable2faMothod.phone) {
       // enable phone 2fa indb
       // update sercate on db
       //
     }
 
     // email
-    if (method === 'email') {
+    if (method === Enable2faMothod.email) {
       // enable phone 2fa indb
       // update sercate on db
       //
