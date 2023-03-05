@@ -11,3 +11,10 @@ export function cryptoGenareateToken(): CryptoType {
 
   return { base32, base16 };
 }
+
+// export function cryptoGenareateToken() {
+//   return {
+//     base32: '1234',
+//     base16: '4rgq',
+//   };
+// }

@@ -15,28 +15,12 @@ interface VerfyResetPass<mt> {
   method: mt;
   password: string;
   code: string | undefined;
-  id?:
-    | string
-    | QueryString.ParsedQs
-    | string[]
-    | QueryString.ParsedQs[]
-    | undefined;
-  token?:
-    | string
-    | QueryString.ParsedQs
-    | string[]
-    | QueryString.ParsedQs[]
-    | undefined;
-  subToken?:
-    | string
-    | QueryString.ParsedQs
-    | string[]
-    | QueryString.ParsedQs[]
-    | undefined;
+  id?: string | any;
+  token?: string | any;
+  subToken?: string | any;
 }
 
 // Enum
-
 enum Enable2faMothod {
   googel = 'google',
   phone = 'phone',

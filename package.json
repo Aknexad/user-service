@@ -10,7 +10,15 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "./source/test/setup.ts"
+    ],
+    "transform": {},
+    "transformIgnorePatterns": [],
+    "modulePathIgnorePatterns": [
+      "./build"
+    ]
   },
   "author": "Novinverse",
   "license": "ISC",

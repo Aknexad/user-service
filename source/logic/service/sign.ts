@@ -202,11 +202,7 @@ export const sing = {
     throw new BadRequest('bad request');
   },
 
-  enableTowFactAuth: async (
-    id: string,
-    status: boolean,
-    method: Enable2faMothod
-  ) => {
+  enableTowFactAuth: async (id: string, status: boolean, method: StrNull) => {
     const user = await singRepo.findUserById(id);
 
     if (!user) throw new NotFound('user dosent exist');
@@ -214,6 +210,8 @@ export const sing = {
     if (status === false) {
       // update user documet
     }
+
+    'google' === Enable2faMothod.googel;
 
     if (method === Enable2faMothod.googel) {
       // enabel googel 2fa in db

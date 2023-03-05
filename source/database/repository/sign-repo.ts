@@ -34,10 +34,7 @@ export const singRepo = {
 
     const findUser = userInput;
 
-    return {
-      id: '1',
-      username: findUser,
-    };
+    return null;
   },
 
   findUserById: async (id: Str): Promise<Test> => {
@@ -63,55 +60,3 @@ export const singRepo = {
 
   updateUserPassword: async (id: Str, password: Str) => {},
 };
-
-// const createUser = async (data: CrateUser): Promise<CrateUser> => {
-//   return {
-//     phone: data.phone,
-//     password: data.password,
-//   };
-// };
-
-// // find section
-// //
-// const findByCustomFiled = async (userInput: string): Promise<Str> => {
-//   // chack input for match username phone or email
-
-//   const findUser = userInput;
-
-//   return findUser;
-// };
-
-// const findUserById = async (id: Str): Promise<Str> => {
-//   return '';
-// };
-
-// const findByPhone = async (number: Str): Promise<Str> => {
-//   return number;
-// };
-
-// // cheack section
-// //
-// const cheackTempToken = async (token: Str): Promise<Str> => {
-//   return token;
-// };
-
-// // update section
-// const updateOtp = async (id: Str, code: Str) => {};
-
-// const updateTempToken = async (id: Str, token: Str) => {};
-
-// const updateStatusOfOtp = async (id: Str, status: Str) => {};
-
-// const updateUserPassword = async (id: Str, password: Str) => {};
-
-// export {
-//   updateOtp,
-//   updateStatusOfOtp,
-//   updateTempToken,
-//   updateUserPassword,
-//   cheackTempToken,
-//   createUser,
-//   findByCustomFiled,
-//   findByPhone,
-//   findUserById,
-// };

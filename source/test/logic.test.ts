@@ -1,6 +1,6 @@
-import { describe, expect, test } from '@jest/globals';
+// import { describe, expect, test } from '@jest/globals';
 
-import { service } from '../index';
+import { service } from '../logic/index';
 
 // describe('logic test', () => {
 //   test('sinup user', async () => {
